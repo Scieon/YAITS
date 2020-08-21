@@ -1,5 +1,7 @@
 .idea
 
+/api/api
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

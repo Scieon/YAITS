@@ -1,0 +1,10 @@
+[server]
+host="localhost"
+port="8080"
+
+[db]
+database="yaits"
+host="localhost"
+port="3306"
+user="docker"
+password="docker"
