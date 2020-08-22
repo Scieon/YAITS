@@ -1,21 +1,23 @@
 package server
 
 import (
+	"github.com/YAITS/api/persistence"
+	"github.com/YAITS/api/server/handlers"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"net/http"
 )
 
-func NewServer(address string, logger *zap.SugaredLogger) *http.Server {
-	router := BuildRouter(logger)
+func NewServer(address string, logger *zap.SugaredLogger, storage *persistence.MysqlStorage) *http.Server {
+	router := BuildRouter(logger, *storage)
 	return &http.Server{
 		Addr:    address,
 		Handler: router,
 	}
 }
 
-func BuildRouter(logger *zap.SugaredLogger) *gin.Engine {
+func BuildRouter(logger *zap.SugaredLogger, storage persistence.MysqlStorage) *gin.Engine {
 	router := gin.New()
 
 	router.Use(setupLogger(logger))
@@ -23,10 +25,7 @@ func BuildRouter(logger *zap.SugaredLogger) *gin.Engine {
 
 	apiGroup := router.Group("/api")
 
-	apiGroup.GET("/", func(c *gin.Context) {
-		logger.Debug("[GET] Test handler")
-		c.String(http.StatusOK, "hello world")
-	})
+	apiGroup.POST("/", handlers.HandlePOST(storage))
 
 	return router
 }

@@ -1,14 +1,16 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/YAITS/api/server"
-	"net/http"
-	"os"
-
+	"github.com/YAITS/api/persistence"
+	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
+	"net/http"
+	"os"
 )
 
 const (
@@ -28,7 +30,13 @@ func main() {
 
 	ginPort := fmt.Sprintf(":%d", viper.GetInt64("server.port"))
 
-	apiServer := server.NewServer(ginPort, logger)
+	storage, err := initDB()
+	if err != nil {
+		logger.Errorf("error initializing database: %s", err.Error())
+		os.Exit(1)
+	}
+
+	apiServer := server.NewServer(ginPort, logger, storage)
 
 	// start server
 	if err := apiServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -60,4 +68,38 @@ func readConfig(filePath string) error {
 	viper.SetDefault("db.host", "localhost")
 	viper.SetDefault("db.port", "3306")
 	return viper.ReadConfig(f)
+}
+
+func initDB() (*persistence.MysqlStorage, error) {
+	host := viper.GetString("db.host")
+	password := viper.GetString("db.password")
+	user := viper.GetString("db.user")
+	dbName := viper.GetString("db.database")
+
+	conConfig := mysql.Config{
+		User:                 user,
+		Passwd:               password,
+		Net:                  "tcp",
+		Addr:                 host,
+		DBName:               dbName,
+		MaxAllowedPacket:     0,
+		AllowNativePasswords: true,
+		ParseTime:            true,
+	}
+
+	db, err := sql.Open("mysql", conConfig.FormatDSN())
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.Ping()
+
+	if err != nil {
+		return nil, err
+	}
+
+	dbStorage := persistence.NewMysqlStorage(db)
+
+	return dbStorage, nil
 }
