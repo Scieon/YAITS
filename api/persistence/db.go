@@ -73,7 +73,7 @@ func (mysqlSt *MysqlStorage) UpdateIssue(summary, description, assignee, status 
 
 	updateQuery := "UPDATE issues SET summary = ?, description = ?, assignee = ?, status = ?, priority = ? WHERE id = ?"
 
-	_, err = mysqlSt.db.Exec(updateQuery, summary, description, assignee, status, priority, issueID)
+	_, err = mysqlSt.db.Exec(updateQuery, issue.Summary, issue.Description, issue.Assignee, issue.Status, issue.Priority, issueID)
 	if err != nil {
 		return nil, err
 	}

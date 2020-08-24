@@ -38,7 +38,7 @@ func HandlePATCH(storage persistence.MysqlStorage) gin.HandlerFunc {
 
 		if err != nil {
 			l.Errorf("couldn't update: %s", err.Error())
-			c.JSON(http.StatusInternalServerError, "db error")
+			models.SetErrorStatusJSON(c, http.StatusInternalServerError, "db error")
 			return
 		}
 

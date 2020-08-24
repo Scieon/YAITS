@@ -1,0 +1,26 @@
+version: '3'
+services:
+  db:
+    build:
+      context: ./
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: yaits
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+    container_name: db
+    command: mysqld --sql_mode="STRICT_ALL_TABLES"
+    ports:
+      - "3306:3306"
+    tty: true
+  app:
+    build:
+      context: ./../api
+    volumes:
+      - "./../api:/app"
+    container_name: app
+    ports:
+      - "8080:8080"
+    tty: true
+    depends_on:
+      - db
