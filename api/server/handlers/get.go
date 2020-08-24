@@ -48,9 +48,40 @@ func HandleGETByStatus(storage persistence.MysqlStorage) gin.HandlerFunc {
 		err := c.ShouldBindQuery(&statusQuery)
 		if err != nil {
 			models.SetErrorStatusJSON(c, http.StatusBadRequest, "could not filter by status")
+			return
 		}
 
 		issueResponse, err := storage.RetrieveIssueByStatus(statusQuery.Status)
+
+		if err == sql.ErrNoRows {
+			models.SetErrorStatusJSON(c, http.StatusNotFound, "could not find issue")
+			return
+		}
+
+		if err != nil {
+			l.Errorf("error retrieving issue in db: %s", err.Error())
+			models.SetErrorStatusJSON(c, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		l.Debug("issue successfully retrieved")
+		c.JSON(200, issueResponse)
+		return
+	}
+}
+
+func HandleGETByPriority(storage persistence.MysqlStorage) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		l := c.MustGet("logger").(*zap.SugaredLogger).With("handler", "[GET] get-issue-by-priority")
+
+		var priorityQuery models.PriorityQueryParam
+		err := c.ShouldBindQuery(&priorityQuery)
+		if err != nil {
+			models.SetErrorStatusJSON(c, http.StatusBadRequest, "could not filter by priority")
+			return
+		}
+
+		issueResponse, err := storage.RetrieveIssueByPriority(priorityQuery.PriorityStart, priorityQuery.PriorityEnd)
 
 		if err == sql.ErrNoRows {
 			models.SetErrorStatusJSON(c, http.StatusNotFound, "could not find issue")

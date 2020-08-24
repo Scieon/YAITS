@@ -1,12 +1,14 @@
 package server
 
 import (
+	"net/http"
+
+	"go.uber.org/zap"
+
 	"github.com/YAITS/api/persistence"
 	"github.com/YAITS/api/server/handlers"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"go.uber.org/zap"
-	"net/http"
 )
 
 func NewServer(address string, logger *zap.SugaredLogger, storage *persistence.MysqlStorage) *http.Server {
@@ -27,6 +29,7 @@ func BuildRouter(logger *zap.SugaredLogger, storage persistence.MysqlStorage) *g
 
 	apiGroup.GET("/issue/:issueID", handlers.HandleGETByID(storage))
 	apiGroup.GET("/issues/status", handlers.HandleGETByStatus(storage))
+	apiGroup.GET("/issues/priority", handlers.HandleGETByPriority(storage))
 
 	apiGroup.POST("/issue", handlers.HandlePOST(storage))
 

@@ -141,6 +141,47 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByStatus(statusFilter string) ([]model
 	return resp, nil
 }
 
+// RetreiveIssueByStatus returns an issue filtered by the priority
+func (mysqlSt *MysqlStorage) RetrieveIssueByPriority(priorityStart, priorityEnd int64) ([]models.IssueResponse, error) {
+	resp := make([]models.IssueResponse, 0)
+	var summary, status, description, assignee, createDate string
+	var id, priority int
+	var rows *sql.Rows
+	var err error
+
+	query := `SELECT id, summary, description, priority, status, assignee, createDate FROM issues WHERE priority >= ?`
+
+	if priorityEnd != 0 {
+		query += ` AND priority <= ?`
+		rows, err = mysqlSt.db.Query(query, priorityStart, priorityEnd)
+	} else {
+		rows, err = mysqlSt.db.Query(query, priorityStart)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&id, &summary, &description, &priority, &status, &assignee, &createDate)
+		if err != nil {
+			return nil, err
+		}
+
+		resp = append(resp, models.IssueResponse{
+			ID:          int64(id),
+			Summary:     summary,
+			Description: description,
+			Priority:    int64(priority),
+			Status:      status,
+			Assignee:    assignee,
+			CreateDate:  createDate,
+		})
+	}
+
+	return resp, nil
+}
+
 // DeleteIssueByID deletes an issue filtered by the issue id
 func (mysqlSt *MysqlStorage) DeleteIssueByID(issueID int64)  error {
 

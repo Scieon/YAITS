@@ -165,3 +165,57 @@ func TestMysqlStorage_DeleteIssueByID(t *testing.T) {
 		}
 	})
 }
+
+func TestMysqlStorage_RetrieveIssueByPriority(t *testing.T) {
+	// setup
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	priorityStart := int64(1)
+	priorityEnd := int64(2)
+
+	// force db closure at end of test
+	defer func() {
+		_ = db.Close()
+	}()
+
+	testingStorage := NewMysqlStorage(db)
+
+	t.Run("NoErrorOnlyPriorityStart", func(t *testing.T) {
+		// set expectations
+		mock.ExpectQuery("SELECT (.+) FROM issues").
+			WithArgs(priorityStart).
+			WillReturnRows(sqlmock.NewRows([]string{"id", "summary", "description", "priority", "status", "assignee", "createDate"}).
+				AddRow(IssueID, Summary, Description, Priority, Status, Assignee, CreateDate))
+
+		// run the code
+		if _, err = testingStorage.RetrieveIssueByPriority(priorityStart, 0); err != nil {
+			t.Errorf("Error should not have occurred while retrieving issue: %s", err)
+		}
+
+		//check expectations are met
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("Expectations not met: %s", err)
+		}
+	})
+
+	t.Run("NoErrorPriorityStartAndEnd", func(t *testing.T) {
+		// set expectations
+		mock.ExpectQuery("SELECT (.+) FROM issues").
+			WithArgs(priorityStart, priorityEnd).
+			WillReturnRows(sqlmock.NewRows([]string{"id", "summary", "description", "priority", "status", "assignee", "createDate"}).
+				AddRow(IssueID, Summary, Description, Priority, Status, Assignee, CreateDate))
+
+		// run the code
+		if _, err = testingStorage.RetrieveIssueByPriority(priorityStart, priorityEnd); err != nil {
+			t.Errorf("Error should not have occurred while retrieving issue: %s", err)
+		}
+
+		//check expectations are met
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("Expectations not met: %s", err)
+		}
+	})
+}
