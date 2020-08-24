@@ -10,15 +10,14 @@ import (
 )
 
 const (
-	IssueID = int64(1)
-	Summary = "This is a summary"
+	IssueID     = int64(1)
+	Summary     = "This is a summary"
 	Description = "This is a description"
-	Assignee = "John Doe"
-	Status = "Open"
-	Priority = int64(1)
-	CreateDate = "some date"
+	Assignee    = "John Doe"
+	Status      = "Open"
+	Priority    = int64(1)
+	CreateDate  = "some date"
 )
-
 
 func TestMysqlStorage_RetrieveIssueByID(t *testing.T) {
 	// setup

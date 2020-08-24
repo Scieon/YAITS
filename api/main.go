@@ -44,7 +44,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	apiServer := server.NewServer(ginPort, logger, &storage)
+	apiServer := server.NewServer(ginPort, logger, storage)
 
 	// start server
 	if err := apiServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {

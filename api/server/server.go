@@ -13,8 +13,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewServer(address string, logger *zap.SugaredLogger, storage *persistence.Storage) *http.Server {
-	router := BuildRouter(logger, *storage)
+func NewServer(address string, logger *zap.SugaredLogger, storage persistence.Storage) *http.Server {
+	router := BuildRouter(logger, storage)
 	return &http.Server{
 		Addr:    address,
 		Handler: router,
