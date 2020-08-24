@@ -25,7 +25,12 @@ func BuildRouter(logger *zap.SugaredLogger, storage persistence.MysqlStorage) *g
 
 	apiGroup := router.Group("/api")
 
-	apiGroup.POST("/", handlers.HandlePOST(storage))
+	apiGroup.GET("/issue/:issueID", handlers.HandleGETByID(storage))
+	apiGroup.GET("/issues/status", handlers.HandleGETByStatus(storage))
+
+	apiGroup.POST("/issue", handlers.HandlePOST(storage))
+
+	apiGroup.PATCH("/issue/:issueID", handlers.HandlePATCH(storage))
 
 	return router
 }

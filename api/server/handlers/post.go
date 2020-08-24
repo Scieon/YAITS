@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"net/http"
+
+	"go.uber.org/zap"
+
 	"github.com/YAITS/api/models"
 	"github.com/YAITS/api/persistence"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
-	"net/http"
 )
 
 func HandlePOST(storage persistence.MysqlStorage) gin.HandlerFunc {
@@ -24,7 +26,7 @@ func HandlePOST(storage persistence.MysqlStorage) gin.HandlerFunc {
 			return
 		}
 
-		err = storage.CreateIssue(req.Summary, req.Description, "", req.Priority)
+		id, err := storage.CreateIssue(req.Summary, req.Description, req.Assignee, req.Priority)
 
 		if err != nil {
 			l.Errorf("couldn't insert into db: %s", err.Error())
@@ -33,7 +35,7 @@ func HandlePOST(storage persistence.MysqlStorage) gin.HandlerFunc {
 		}
 
 		l.Debug("insertion successful")
-		c.JSON(http.StatusCreated, "ok")
+		c.JSON(http.StatusCreated, id)
 		return
 	}
 }
