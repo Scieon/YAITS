@@ -44,7 +44,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	apiServer := server.NewServer(ginPort, logger, storage)
+	apiServer := server.NewServer(ginPort, logger, &storage)
 
 	// start server
 	if err := apiServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -78,7 +78,7 @@ func readConfig(filePath string) error {
 	return viper.ReadConfig(f)
 }
 
-func initDB() (*persistence.MysqlStorage, error) {
+func initDB() (persistence.Storage, error) {
 	host := viper.GetString("db.host")
 	password := viper.GetString("db.password")
 	user := viper.GetString("db.user")

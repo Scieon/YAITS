@@ -21,7 +21,7 @@ import (
 // @failure 400 {object} models.ErrorWrapper
 // @failure 500 {object} models.ErrorWrapper
 // @router /issue [post]
-func HandlePOST(storage persistence.MysqlStorage) gin.HandlerFunc {
+func HandlePOST(storage persistence.Storage) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		l := c.MustGet("logger").(*zap.SugaredLogger).With("handler", "[POST] create-issue")
 

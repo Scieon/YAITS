@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewServer(address string, logger *zap.SugaredLogger, storage *persistence.MysqlStorage) *http.Server {
+func NewServer(address string, logger *zap.SugaredLogger, storage *persistence.Storage) *http.Server {
 	router := BuildRouter(logger, *storage)
 	return &http.Server{
 		Addr:    address,
@@ -21,7 +21,7 @@ func NewServer(address string, logger *zap.SugaredLogger, storage *persistence.M
 	}
 }
 
-func BuildRouter(logger *zap.SugaredLogger, storage persistence.MysqlStorage) *gin.Engine {
+func BuildRouter(logger *zap.SugaredLogger, storage persistence.Storage) *gin.Engine {
 	router := gin.New()
 
 	router.Use(setupLogger(logger))

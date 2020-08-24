@@ -24,7 +24,7 @@ import (
 // @failure 404 {object} models.ErrorWrapper
 // @failure 500 {object} models.ErrorWrapper
 // @router /issue/{id} [delete]
-func HandleDELETE(storage persistence.MysqlStorage) gin.HandlerFunc {
+func HandleDELETE(storage persistence.Storage) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		l := c.MustGet("logger").(*zap.SugaredLogger).With("handler", "[DELETE] delete-issue")
 

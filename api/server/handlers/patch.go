@@ -25,7 +25,7 @@ import (
 // @failure 404 {object} models.ErrorWrapper
 // @failure 500 {object} models.ErrorWrapper
 // @router /issue/{id} [patch]
-func HandlePATCH(storage persistence.MysqlStorage) gin.HandlerFunc {
+func HandlePATCH(storage persistence.Storage) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		l := c.MustGet("logger").(*zap.SugaredLogger).With("handler", "[PATCH] update-issue")
 

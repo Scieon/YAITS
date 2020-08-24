@@ -5,6 +5,16 @@ import (
 	"github.com/YAITS/api/models"
 )
 
+// Storage is an interface to query and insert into some data storage
+type Storage interface {
+	CreateIssue(summary, description, assignee string, priority int64) (int64, error)
+	UpdateIssue(summary, description, assignee, status string, priority, issueID int64) (*models.IssueResponse, error)
+	RetrieveIssueByID(issueID int64) (models.IssueResponse, error)
+	RetrieveIssueByStatus(statusFilter string) ([]models.IssueResponse, error)
+	RetrieveIssueByPriority(priorityStart, priorityEnd int64) ([]models.IssueResponse, error)
+	DeleteIssueByID(issueID int64) error
+}
+
 //MysqlStorage - Hold sql database pointer
 type MysqlStorage struct {
 	db *sql.DB
@@ -183,7 +193,7 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByPriority(priorityStart, priorityEnd 
 }
 
 // DeleteIssueByID deletes an issue filtered by the issue id
-func (mysqlSt *MysqlStorage) DeleteIssueByID(issueID int64)  error {
+func (mysqlSt *MysqlStorage) DeleteIssueByID(issueID int64) error {
 
 	query := `DELETE FROM issues WHERE id = ?`
 

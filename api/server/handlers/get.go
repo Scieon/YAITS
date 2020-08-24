@@ -23,7 +23,7 @@ import (
 // @failure 404 {object} models.ErrorWrapper
 // @failure 500 {object} models.ErrorWrapper
 // @router /issue/{id} [get]
-func HandleGETByID(storage persistence.MysqlStorage) gin.HandlerFunc {
+func HandleGETByID(storage persistence.Storage) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		l := c.MustGet("logger").(*zap.SugaredLogger).With("handler", "[GET] get-issue-by-id")
 
@@ -64,7 +64,7 @@ func HandleGETByID(storage persistence.MysqlStorage) gin.HandlerFunc {
 // @failure 404 {object} models.ErrorWrapper
 // @failure 500 {object} models.ErrorWrapper
 // @router /issues/status [get]
-func HandleGETByStatus(storage persistence.MysqlStorage) gin.HandlerFunc {
+func HandleGETByStatus(storage persistence.Storage) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		l := c.MustGet("logger").(*zap.SugaredLogger).With("handler", "[GET] get-issue-by-status")
 
@@ -107,7 +107,7 @@ func HandleGETByStatus(storage persistence.MysqlStorage) gin.HandlerFunc {
 // @failure 404 {object} models.ErrorWrapper
 // @failure 500 {object} models.ErrorWrapper
 // @router /issues/priority [get]
-func HandleGETByPriority(storage persistence.MysqlStorage) gin.HandlerFunc {
+func HandleGETByPriority(storage persistence.Storage) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		l := c.MustGet("logger").(*zap.SugaredLogger).With("handler", "[GET] get-issue-by-priority")
 
