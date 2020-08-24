@@ -32,6 +32,8 @@ func BuildRouter(logger *zap.SugaredLogger, storage persistence.MysqlStorage) *g
 
 	apiGroup.PATCH("/issue/:issueID", handlers.HandlePATCH(storage))
 
+	apiGroup.DELETE("/issue/:issueID", handlers.HandleDELETE(storage))
+
 	return router
 }
 

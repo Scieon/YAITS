@@ -140,3 +140,17 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByStatus(statusFilter string) ([]model
 
 	return resp, nil
 }
+
+// DeleteIssueByID deletes an issue filtered by the issue id
+func (mysqlSt *MysqlStorage) DeleteIssueByID(issueID int64)  error {
+
+	query := `DELETE FROM issues WHERE id = ?`
+
+	_, err := mysqlSt.db.Exec(query, issueID)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 
@@ -35,6 +36,11 @@ func HandlePATCH(storage persistence.MysqlStorage) gin.HandlerFunc {
 		}
 
 		issue, err := storage.UpdateIssue(req.Summary, req.Description, req.Assignee, req.Status, req.Priority, issueID)
+
+		if err == sql.ErrNoRows {
+			models.SetErrorStatusJSON(c, http.StatusNotFound, "could not find issue")
+			return
+		}
 
 		if err != nil {
 			l.Errorf("couldn't update: %s", err.Error())
