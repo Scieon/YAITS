@@ -12,6 +12,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//HandlePATCH - Route to update an issue
+// @summary Update an issue
+// @description Updates an issue given an issue id
+// @tags issue
+// @accept json
+// @produce json
+// @Param id path int true "ID of the issue"
+// @param updateIssueRequest body models.UpdateIssueRequest true "YAITS update request"
+// @success 200 {object} models.IssueResponse
+// @failure 400 {object} models.ErrorWrapper
+// @failure 404 {object} models.ErrorWrapper
+// @failure 500 {object} models.ErrorWrapper
+// @router /issue/{id} [patch]
 func HandlePATCH(storage persistence.MysqlStorage) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		l := c.MustGet("logger").(*zap.SugaredLogger).With("handler", "[PATCH] update-issue")
@@ -49,7 +62,7 @@ func HandlePATCH(storage persistence.MysqlStorage) gin.HandlerFunc {
 		}
 
 		l.Debug("update successful")
-		c.JSON(http.StatusCreated, issue)
+		c.JSON(http.StatusOK, issue)
 		return
 	}
 }

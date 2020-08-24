@@ -1,0 +1,299 @@
+basePath: /api
+definitions:
+  models.ErrorWrapper:
+    properties:
+      errors:
+        items:
+          $ref: '#/definitions/models.StandardError'
+        type: array
+    type: object
+  models.IssueResponse:
+    properties:
+      assignee:
+        type: string
+      createDate:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      priority:
+        type: integer
+      status:
+        type: string
+      summary:
+        type: string
+    type: object
+  models.NewIssueRequest:
+    properties:
+      assignee:
+        type: string
+      description:
+        type: string
+      priority:
+        type: integer
+      summary:
+        type: string
+    required:
+    - description
+    - priority
+    - summary
+    type: object
+  models.StandardError:
+    properties:
+      code:
+        type: integer
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  models.UpdateIssueRequest:
+    properties:
+      assignee:
+        type: string
+      description:
+        type: string
+      priority:
+        type: integer
+      status:
+        type: string
+      summary:
+        type: string
+    type: object
+host: '{{.Host}}'
+info:
+  contact:
+    email: anhkhoi.vunguyen@gmai.com
+    name: API Support
+  description: Swagger API for Yet Another Issue Tracking System.
+  license: {}
+  title: YAITS Swagger API
+  version: "1.0"
+paths:
+  /issue:
+    post:
+      consumes:
+      - application/json
+      description: Create a new issue
+      parameters:
+      - description: YAITS creation request
+        in: body
+        name: issueRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewIssueRequest'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.IssueResponse'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+      summary: Create an issue
+      tags:
+      - issue
+  /issue/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an issue given an issue id
+      parameters:
+      - description: ID of the issue
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+      summary: Delete an issue
+      tags:
+      - issue
+    get:
+      consumes:
+      - application/json
+      description: Retrieves an issue given issue id
+      parameters:
+      - description: ID of the issue
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.IssueResponse'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+      summary: Retrieves an issue given issue id
+      tags:
+      - issue
+    patch:
+      consumes:
+      - application/json
+      description: Updates an issue given an issue id
+      parameters:
+      - description: ID of the issue
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: YAITS update request
+        in: body
+        name: updateIssueRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateIssueRequest'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.IssueResponse'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+      summary: Update an issue
+      tags:
+      - issue
+  /issues/priority:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves an issue given priority
+      parameters:
+      - description: priority start bound
+        in: query
+        name: start
+        type: models.PriorityQueryParam
+      - description: priority end bound
+        in: query
+        name: end
+        type: models.PriorityQueryParam
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.IssueResponse'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+      summary: Retrieves an issue given priority
+      tags:
+      - issue
+  /issues/status:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves an issue given status (open, closed, in progress)
+      parameters:
+      - description: issue priority request
+        in: query
+        name: status
+        type: models.StatusQueryParam
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.IssueResponse'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+      summary: Retrieves an issue given status
+      tags:
+      - issue
+swagger: "2.0"

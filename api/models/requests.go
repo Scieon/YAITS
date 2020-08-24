@@ -19,5 +19,11 @@ type UpdateIssueRequest struct {
 
 // StatusQueryParam is the query header parameter to filter issues by statuses
 type StatusQueryParam struct {
-	Status string `json:"status"`
+	Status string `form:"status"`
+}
+
+// PriorityQueryParam is the query header parameter to filter issues by priority
+type PriorityQueryParam struct {
+	PriorityStart int64 `form:"start"`
+	PriorityEnd   int64 `form:"end"`
 }

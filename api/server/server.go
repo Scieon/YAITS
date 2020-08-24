@@ -1,6 +1,8 @@
 package server
 
 import (
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"net/http"
 
 	"go.uber.org/zap"
@@ -36,6 +38,8 @@ func BuildRouter(logger *zap.SugaredLogger, storage persistence.MysqlStorage) *g
 	apiGroup.PATCH("/issue/:issueID", handlers.HandlePATCH(storage))
 
 	apiGroup.DELETE("/issue/:issueID", handlers.HandleDELETE(storage))
+
+	apiGroup.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return router
 }

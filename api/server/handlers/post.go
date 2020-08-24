@@ -10,6 +10,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//HandlePOST - Route to create an issue
+// @summary Create an issue
+// @description Create a new issue
+// @tags issue
+// @accept json
+// @produce json
+// @param issueRequest body models.NewIssueRequest true "YAITS creation request"
+// @success 201 {object} models.IssueResponse
+// @failure 400 {object} models.ErrorWrapper
+// @failure 500 {object} models.ErrorWrapper
+// @router /issue [post]
 func HandlePOST(storage persistence.MysqlStorage) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		l := c.MustGet("logger").(*zap.SugaredLogger).With("handler", "[POST] create-issue")

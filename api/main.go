@@ -19,6 +19,14 @@ const (
 
 var logger *zap.SugaredLogger
 
+// @title YAITS Swagger API
+// @version 1.0
+// @description Swagger API for Yet Another Issue Tracking System.
+
+// @contact.name API Support
+// @contact.email anhkhoi.vunguyen@gmai.com
+
+// @BasePath /api
 func main() {
 	err := readConfig(defaultConfigPath)
 	logger := GetLogger()
