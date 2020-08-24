@@ -22,3 +22,6 @@ jobs:
 
     - name: Build
       run: cd api && go build -v .
+
+    - name: Test
+      run: cd api && go test ./...
