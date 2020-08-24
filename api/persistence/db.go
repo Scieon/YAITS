@@ -8,7 +8,7 @@ import (
 // Storage is an interface to query and insert into some data storage
 type Storage interface {
 	CreateIssue(summary, description, assignee string, priority int64) (int64, error)
-	UpdateIssue(summary, description, assignee, status string, priority, issueID int64) (*models.IssueResponse, error)
+	UpdateIssue(summary, description, assignee, status, comment string, priority, issueID int64) (*models.IssueResponse, error)
 	RetrieveIssueByID(issueID int64) (models.IssueResponse, error)
 	RetrieveIssueByStatus(statusFilter string) ([]models.IssueResponse, error)
 	RetrieveIssueByPriority(priorityStart, priorityEnd int64) ([]models.IssueResponse, error)
@@ -57,7 +57,7 @@ func (mysqlSt *MysqlStorage) CreateIssue(summary, description, assignee string, 
 }
 
 // UpdateIssue edits an existing issue
-func (mysqlSt *MysqlStorage) UpdateIssue(summary, description, assignee, status string, priority, issueID int64) (*models.IssueResponse, error) {
+func (mysqlSt *MysqlStorage) UpdateIssue(summary, description, assignee, status, comment string, priority, issueID int64) (*models.IssueResponse, error) {
 	var err error
 
 	issue, err := mysqlSt.RetrieveIssueByID(issueID)
@@ -80,10 +80,21 @@ func (mysqlSt *MysqlStorage) UpdateIssue(summary, description, assignee, status 
 	if priority != 0 {
 		issue.Priority = priority
 	}
+	if comment != "" {
+		issue.Comments = append(issue.Comments, comment)
+	}
 
+	// todo Use transaction
 	updateQuery := "UPDATE issues SET summary = ?, description = ?, assignee = ?, status = ?, priority = ? WHERE id = ?"
 
 	_, err = mysqlSt.db.Exec(updateQuery, issue.Summary, issue.Description, issue.Assignee, issue.Status, issue.Priority, issueID)
+	if err != nil {
+		return nil, err
+	}
+
+	insertCommentQuery := "INSERT INTO comments (comment, issueID) values (?, ?)"
+
+	_, err = mysqlSt.db.Exec(insertCommentQuery, comment, issueID)
 	if err != nil {
 		return nil, err
 	}
@@ -105,6 +116,11 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByID(issueID int64) (models.IssueRespo
 		return resp, err
 	}
 
+	comments, err := mysqlSt.getComments(issueID)
+	if err != nil {
+		return resp, err
+	}
+
 	resp = models.IssueResponse{
 		ID:          int64(id),
 		Summary:     summary,
@@ -113,6 +129,7 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByID(issueID int64) (models.IssueRespo
 		Status:      status,
 		Assignee:    assignee,
 		CreateDate:  createDate,
+		Comments:    comments,
 	}
 
 	return resp, nil
@@ -122,7 +139,7 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByID(issueID int64) (models.IssueRespo
 func (mysqlSt *MysqlStorage) RetrieveIssueByStatus(statusFilter string) ([]models.IssueResponse, error) {
 	resp := make([]models.IssueResponse, 0)
 	var summary, status, description, assignee, createDate string
-	var id, priority int
+	var id, priority int64
 
 	query := `SELECT id, summary, description, priority, status, assignee, createDate FROM issues WHERE status = ?`
 
@@ -137,6 +154,11 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByStatus(statusFilter string) ([]model
 			return nil, err
 		}
 
+		comments, err := mysqlSt.getComments(id)
+		if err != nil {
+			return resp, err
+		}
+
 		resp = append(resp, models.IssueResponse{
 			ID:          int64(id),
 			Summary:     summary,
@@ -145,6 +167,7 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByStatus(statusFilter string) ([]model
 			Status:      status,
 			Assignee:    assignee,
 			CreateDate:  createDate,
+			Comments:    comments,
 		})
 	}
 
@@ -155,7 +178,7 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByStatus(statusFilter string) ([]model
 func (mysqlSt *MysqlStorage) RetrieveIssueByPriority(priorityStart, priorityEnd int64) ([]models.IssueResponse, error) {
 	resp := make([]models.IssueResponse, 0)
 	var summary, status, description, assignee, createDate string
-	var id, priority int
+	var id, priority int64
 	var rows *sql.Rows
 	var err error
 
@@ -178,6 +201,11 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByPriority(priorityStart, priorityEnd 
 			return nil, err
 		}
 
+		comments, err := mysqlSt.getComments(id)
+		if err != nil {
+			return resp, err
+		}
+
 		resp = append(resp, models.IssueResponse{
 			ID:          int64(id),
 			Summary:     summary,
@@ -186,6 +214,7 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByPriority(priorityStart, priorityEnd 
 			Status:      status,
 			Assignee:    assignee,
 			CreateDate:  createDate,
+			Comments:    comments,
 		})
 	}
 
@@ -204,4 +233,24 @@ func (mysqlSt *MysqlStorage) DeleteIssueByID(issueID int64) error {
 	}
 
 	return nil
+}
+
+func (mysqlSt *MysqlStorage) getComments(issueID int64) ([]string, error) {
+	comments := make([]string, 0)
+	var comment string
+
+	query := `SELECT comment FROM comments WHERE issueID = ?`
+
+	rows, err := mysqlSt.db.Query(query, issueID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&comment)
+		comments = append(comments, comment)
+	}
+
+	return comments, nil
 }

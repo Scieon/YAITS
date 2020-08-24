@@ -48,7 +48,7 @@ func HandlePATCH(storage persistence.Storage) gin.HandlerFunc {
 			return
 		}
 
-		issue, err := storage.UpdateIssue(req.Summary, req.Description, req.Assignee, req.Status, req.Priority, issueID)
+		issue, err := storage.UpdateIssue(req.Summary, req.Description, req.Assignee, req.Status, req.Comment, req.Priority, issueID)
 
 		if err == sql.ErrNoRows {
 			models.SetErrorStatusJSON(c, http.StatusNotFound, "could not find issue")

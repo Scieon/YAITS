@@ -17,6 +17,7 @@ const (
 	Status      = "Open"
 	Priority    = int64(1)
 	CreateDate  = "some date"
+	Comment 	= "This is a comment"
 )
 
 func TestMysqlStorage_RetrieveIssueByID(t *testing.T) {
@@ -37,6 +38,11 @@ func TestMysqlStorage_RetrieveIssueByID(t *testing.T) {
 		WithArgs(IssueID).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "summary", "description", "priority", "status", "assignee", "createDate"}).
 			AddRow(IssueID, Summary, Description, Priority, Status, Assignee, CreateDate))
+
+	mock.ExpectQuery("SELECT (.+) FROM comments").
+		WithArgs(IssueID).
+		WillReturnRows(sqlmock.NewRows([]string{"comment"}).
+			AddRow(Comment))
 
 	// run the code
 	if _, err = testingStorage.RetrieveIssueByID(IssueID); err != nil {
@@ -67,6 +73,11 @@ func TestMysqlStorage_RetrieveIssueByStatus(t *testing.T) {
 		WithArgs(Status).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "summary", "description", "priority", "status", "assignee", "createDate"}).
 			AddRow(IssueID, Summary, Description, Priority, Status, Assignee, CreateDate))
+
+	mock.ExpectQuery("SELECT (.+) FROM comments").
+		WithArgs(IssueID).
+		WillReturnRows(sqlmock.NewRows([]string{"comment"}).
+			AddRow(Comment))
 
 	// run the code
 	if _, err = testingStorage.RetrieveIssueByStatus(Status); err != nil {
@@ -100,12 +111,21 @@ func TestMysqlStorage_UpdateIssue(t *testing.T) {
 				AddRow(IssueID, Summary, Description, Priority, Status, Assignee, CreateDate))
 
 		// set expectations
+		mock.ExpectQuery("SELECT (.+) FROM comments").
+			WithArgs(IssueID).
+			WillReturnRows(sqlmock.NewRows([]string{"comment"}).
+				AddRow(Comment))
+
 		mock.ExpectExec("UPDATE issues SET").
 			WithArgs(Summary, Description, Assignee, Status, Priority, IssueID).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
+		mock.ExpectExec("INSERT INTO comments").
+			WithArgs(Comment, IssueID).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+
 		// run the code
-		if _, err = testingStorage.UpdateIssue(Summary, Description, Assignee, Status, Priority, IssueID); err != nil {
+		if _, err = testingStorage.UpdateIssue(Summary, Description, Assignee, Status, Comment, Priority, IssueID); err != nil {
 			t.Errorf("Error should not have occurred while updating issue: %s", err)
 		}
 
@@ -189,6 +209,11 @@ func TestMysqlStorage_RetrieveIssueByPriority(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows([]string{"id", "summary", "description", "priority", "status", "assignee", "createDate"}).
 				AddRow(IssueID, Summary, Description, Priority, Status, Assignee, CreateDate))
 
+		mock.ExpectQuery("SELECT (.+) FROM comments").
+			WithArgs(IssueID).
+			WillReturnRows(sqlmock.NewRows([]string{"comment"}).
+				AddRow(Comment))
+
 		// run the code
 		if _, err = testingStorage.RetrieveIssueByPriority(priorityStart, 0); err != nil {
 			t.Errorf("Error should not have occurred while retrieving issue: %s", err)
@@ -206,6 +231,11 @@ func TestMysqlStorage_RetrieveIssueByPriority(t *testing.T) {
 			WithArgs(priorityStart, priorityEnd).
 			WillReturnRows(sqlmock.NewRows([]string{"id", "summary", "description", "priority", "status", "assignee", "createDate"}).
 				AddRow(IssueID, Summary, Description, Priority, Status, Assignee, CreateDate))
+
+		mock.ExpectQuery("SELECT (.+) FROM comments").
+			WithArgs(IssueID).
+			WillReturnRows(sqlmock.NewRows([]string{"comment"}).
+				AddRow(Comment))
 
 		// run the code
 		if _, err = testingStorage.RetrieveIssueByPriority(priorityStart, priorityEnd); err != nil {

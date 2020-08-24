@@ -7,13 +7,14 @@ import (
 
 // IssueResponse contains all information about an issue
 type IssueResponse struct {
-	ID          int64  `json:"id"`
-	Description string `json:"description"`
-	Summary     string `json:"summary"`
-	Status      string `json:"status"`
-	Assignee    string `json:"assignee"`
-	CreateDate  string `json:"createDate"`
-	Priority    int64  `json:"priority"`
+	ID          int64    `json:"id"`
+	Description string   `json:"description"`
+	Summary     string   `json:"summary"`
+	Status      string   `json:"status"`
+	Assignee    string   `json:"assignee"`
+	CreateDate  string   `json:"createDate"`
+	Priority    int64    `json:"priority"`
+	Comments    []string `json:"comments"`
 }
 
 // ErrorWrapper provides a general template for the response

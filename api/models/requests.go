@@ -15,6 +15,7 @@ type UpdateIssueRequest struct {
 	Priority    int64  `json:"priority"`
 	Assignee    string `json:"assignee"`
 	Status      string `json:"status"`
+	Comment     string `json:"comment"`
 }
 
 // StatusQueryParam is the query header parameter to filter issues by statuses

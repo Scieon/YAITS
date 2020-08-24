@@ -28,7 +28,7 @@ func (storage *Storage) CreateIssue(_, _, _ string, _ int64) (int64, error) {
 	return 1, nil
 }
 
-func (storage *Storage) UpdateIssue(_, _, _, _ string, _, _ int64) (*models.IssueResponse, error) {
+func (storage *Storage) UpdateIssue(_, _, _, _, _ string, _, _ int64) (*models.IssueResponse, error) {
 	return &MockIssueResponse, nil
 }
 
