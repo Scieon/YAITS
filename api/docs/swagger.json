@@ -317,13 +317,6 @@
                             "$ref": "#/definitions/models.ErrorWrapper"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ErrorWrapper"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {

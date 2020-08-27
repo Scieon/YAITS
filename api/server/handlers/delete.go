@@ -42,7 +42,7 @@ func HandleDELETE(storage persistence.Storage) gin.HandlerFunc {
 
 		if err != nil {
 			l.Errorf("couldn't update: %s", err.Error())
-			models.SetErrorStatusJSON(c, http.StatusInternalServerError, "db error")
+			models.SetErrorStatusJSON(c, http.StatusInternalServerError, err.Error())
 			return
 		}
 

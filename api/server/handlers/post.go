@@ -41,7 +41,7 @@ func HandlePOST(storage persistence.Storage) gin.HandlerFunc {
 
 		if err != nil {
 			l.Errorf("couldn't insert into db: %s", err.Error())
-			c.JSON(http.StatusInternalServerError, "db error")
+			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
 

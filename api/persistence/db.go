@@ -1,6 +1,7 @@
 package persistence
 
 import (
+	"context"
 	"database/sql"
 	"github.com/YAITS/api/models"
 )
@@ -85,18 +86,23 @@ func (mysqlSt *MysqlStorage) UpdateIssue(summary, description, assignee, status,
 		issue.Comments = append(issue.Comments, models.Comment{Comment: comment})
 	}
 
-	// todo Use transaction
+	ctx := context.Background()
+	tx, _ := mysqlSt.db.BeginTx(ctx, nil)
+
 	updateQuery := "UPDATE issues SET summary = ?, description = ?, assignee = ?, status = ?, priority = ? WHERE id = ?"
 
-	_, err = mysqlSt.db.Exec(updateQuery, issue.Summary, issue.Description, issue.Assignee, issue.Status, issue.Priority, issueID)
+	_, err = mysqlSt.db.ExecContext(ctx, updateQuery, issue.Summary, issue.Description, issue.Assignee, issue.Status, issue.Priority, issueID)
 	if err != nil {
+		// if error in the query execution, rollback the transaction
+		tx.Rollback()
 		return nil, err
 	}
 
 	insertCommentQuery := "INSERT INTO comments (comment, issueID) values (?, ?)"
 
-	_, err = mysqlSt.db.Exec(insertCommentQuery, comment, issueID)
+	_, err = mysqlSt.db.ExecContext(ctx, insertCommentQuery, comment, issueID)
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
