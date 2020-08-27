@@ -175,7 +175,7 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByID(issueID int64) (models.IssueRespo
 	return resp, nil
 }
 
-// RetreiveIssueByStatus returns an issue filtered by the status (open, closed, in progress)
+// RetrieveIssueByStatus returns an issue filtered by the status (open, closed, in progress)
 func (mysqlSt *MysqlStorage) RetrieveIssueByStatus(statusFilter string) ([]models.IssueResponse, error) {
 	resp := make([]models.IssueResponse, 0)
 	var summary, status, description, assignee, createDate string
@@ -214,7 +214,7 @@ func (mysqlSt *MysqlStorage) RetrieveIssueByStatus(statusFilter string) ([]model
 	return resp, nil
 }
 
-// RetreiveIssueByStatus returns an issue filtered by the priority
+// RetrieveIssueByPriority returns an issue filtered by the priority
 func (mysqlSt *MysqlStorage) RetrieveIssueByPriority(priorityStart, priorityEnd int64) ([]models.IssueResponse, error) {
 	resp := make([]models.IssueResponse, 0)
 	var summary, status, description, assignee, createDate string
