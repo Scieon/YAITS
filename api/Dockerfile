@@ -5,5 +5,5 @@ RUN apt-get update
 RUN apt-get install vim -y
 
 WORKDIR /app
-# CMD ["go", "mod", "vendor"]
-# CMD ["go", "run", "main.go"]
+ CMD ["go", "mod", "vendor"]
+ CMD ["go", "run", "main.go"]

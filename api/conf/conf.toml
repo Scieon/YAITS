@@ -4,6 +4,6 @@ port="8080"
 
 [db]
 database="yaits"
-host="localhost"
+host="db"
 user="docker"
 password="docker"
