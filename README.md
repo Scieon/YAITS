@@ -6,7 +6,7 @@ Yet Another Issue Tracking System (YAITS) is a Go Modules project that gives API
 ## Setup
 The project can be run with docker 
 1. From YAITS/mysql run `docker-compose up --build`
-(if running with docker the db host conf should be matching the mysql container name in this case `db`)
+(the db host conf should be matching the mysql container name in this case `db`)
 2. This will spawn a mysql container exposed at :3306 and the api exposed at :8080 (with the volume mounted on)
 
 ## Testing

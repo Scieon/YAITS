@@ -3,14 +3,16 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/YAITS/api/server"
+	"net/http"
+	"os"
+	
+	"go.uber.org/zap"
+
 	"github.com/YAITS/api/persistence"
+	"github.com/YAITS/api/server"
 	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/viper"
-	"go.uber.org/zap"
-	"net/http"
-	"os"
 )
 
 const (
@@ -74,7 +76,6 @@ func readConfig(filePath string) error {
 	viper.SetDefault("server.host", "127.0.0.1")
 	viper.SetDefault("server.port", "8080")
 	viper.SetDefault("db.host", "localhost")
-	viper.SetDefault("db.port", "3306")
 	return viper.ReadConfig(f)
 }
 

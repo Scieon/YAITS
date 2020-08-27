@@ -33,7 +33,7 @@ func HandlePOST(storage persistence.Storage) gin.HandlerFunc {
 
 		if err != nil {
 			l.Errorf("couldn't bind to issue request: %s", err.Error())
-			c.JSON(http.StatusBadRequest, err.Error())
+			models.SetErrorStatusJSON(c, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -41,7 +41,7 @@ func HandlePOST(storage persistence.Storage) gin.HandlerFunc {
 
 		if err != nil {
 			l.Errorf("couldn't insert into db: %s", err.Error())
-			c.JSON(http.StatusInternalServerError, err.Error())
+			models.SetErrorStatusJSON(c, http.StatusInternalServerError, err.Error())
 			return
 		}
 
