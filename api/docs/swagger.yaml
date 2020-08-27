@@ -1,5 +1,10 @@
 basePath: /api
 definitions:
+  models.Comment:
+    properties:
+      comment:
+        type: string
+    type: object
   models.ErrorWrapper:
     properties:
       errors:
@@ -7,10 +12,19 @@ definitions:
           $ref: '#/definitions/models.StandardError'
         type: array
     type: object
+  models.IssueIDResponse:
+    properties:
+      id:
+        type: integer
+    type: object
   models.IssueResponse:
     properties:
       assignee:
         type: string
+      comments:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
       createDate:
         type: string
       description:
@@ -52,6 +66,8 @@ definitions:
     properties:
       assignee:
         type: string
+      comment:
+        type: string
       description:
         type: string
       priority:
@@ -90,7 +106,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.IssueResponse'
+            $ref: '#/definitions/models.IssueIDResponse'
             type: object
         "400":
           description: Bad Request
@@ -104,7 +120,7 @@ paths:
             type: object
       summary: Create an issue
       tags:
-      - issue
+      - Creation
   /issue/{id}:
     delete:
       consumes:
@@ -140,7 +156,7 @@ paths:
             type: object
       summary: Delete an issue
       tags:
-      - issue
+      - Deletion
     get:
       consumes:
       - application/json
@@ -176,7 +192,7 @@ paths:
             type: object
       summary: Retrieves an issue given issue id
       tags:
-      - issue
+      - Retrieval
     patch:
       consumes:
       - application/json
@@ -219,7 +235,38 @@ paths:
             type: object
       summary: Update an issue
       tags:
-      - issue
+      - Update
+  /issues:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all issues
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.IssueResponse'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorWrapper'
+            type: object
+      summary: Retrieves all existing issues
+      tags:
+      - Retrieval
   /issues/priority:
     get:
       consumes:
@@ -259,7 +306,7 @@ paths:
             type: object
       summary: Retrieves an issue given priority
       tags:
-      - issue
+      - Retrieval
   /issues/status:
     get:
       consumes:
@@ -295,5 +342,5 @@ paths:
             type: object
       summary: Retrieves an issue given status
       tags:
-      - issue
+      - Retrieval
 swagger: "2.0"

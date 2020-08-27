@@ -7,14 +7,24 @@ import (
 
 // IssueResponse contains all information about an issue
 type IssueResponse struct {
-	ID          int64    `json:"id"`
-	Description string   `json:"description"`
-	Summary     string   `json:"summary"`
-	Status      string   `json:"status"`
-	Assignee    string   `json:"assignee"`
-	CreateDate  string   `json:"createDate"`
-	Priority    int64    `json:"priority"`
-	Comments    []string `json:"comments"`
+	ID          int64     `json:"id"`
+	Description string    `json:"description"`
+	Summary     string    `json:"summary"`
+	Status      string    `json:"status"`
+	Assignee    string    `json:"assignee"`
+	CreateDate  string    `json:"createDate"`
+	Priority    int64     `json:"priority"`
+	Comments    []Comment `json:"comments"`
+}
+
+// IssueIDResponse is returned when a new issue is created
+type IssueIDResponse struct {
+	ID int64 `json:"id"`
+}
+
+// Comment is the struct that contains an issue comment as well as the date when it was commented
+type Comment struct {
+	Comment string `json:"comment"`
 }
 
 // ErrorWrapper provides a general template for the response

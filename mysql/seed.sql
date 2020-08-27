@@ -19,5 +19,5 @@ issueID int(10) unsigned NOT NULL,
 comment varchar(1024),
 createDate timestamp NULL DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (`commentID`),
-CONSTRAINT `comments_fk_1` FOREIGN KEY (`issueID`) REFERENCES `issues` (`id`)
+CONSTRAINT `comments_fk_1` FOREIGN KEY (`issueID`) REFERENCES `issues` (`id`) ON DELETE CASCADE
 );

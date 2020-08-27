@@ -10,6 +10,7 @@ type Storage interface {
 	CreateIssue(summary, description, assignee string, priority int64) (int64, error)
 	UpdateIssue(summary, description, assignee, status, comment string, priority, issueID int64) (*models.IssueResponse, error)
 	RetrieveIssueByID(issueID int64) (models.IssueResponse, error)
+	RetrieveIssues() ([]models.IssueResponse, error)
 	RetrieveIssueByStatus(statusFilter string) ([]models.IssueResponse, error)
 	RetrieveIssueByPriority(priorityStart, priorityEnd int64) ([]models.IssueResponse, error)
 	DeleteIssueByID(issueID int64) error
@@ -81,7 +82,7 @@ func (mysqlSt *MysqlStorage) UpdateIssue(summary, description, assignee, status,
 		issue.Priority = priority
 	}
 	if comment != "" {
-		issue.Comments = append(issue.Comments, comment)
+		issue.Comments = append(issue.Comments, models.Comment{Comment: comment})
 	}
 
 	// todo Use transaction
@@ -100,6 +101,45 @@ func (mysqlSt *MysqlStorage) UpdateIssue(summary, description, assignee, status,
 	}
 
 	return &issue, nil
+}
+
+// RetrieveIssues returns all existing issues
+func (mysqlSt *MysqlStorage) RetrieveIssues() ([]models.IssueResponse, error) {
+	resp := make([]models.IssueResponse, 0)
+	var summary, status, description, assignee, createDate string
+	var id, priority int64
+
+	query := `SELECT id, summary, description, priority, status, assignee, createDate FROM issues`
+
+	rows, err := mysqlSt.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&id, &summary, &description, &priority, &status, &assignee, &createDate)
+		if err != nil {
+			return nil, err
+		}
+
+		comments, err := mysqlSt.getComments(id)
+		if err != nil {
+			return resp, err
+		}
+
+		resp = append(resp, models.IssueResponse{
+			ID:          int64(id),
+			Summary:     summary,
+			Description: description,
+			Priority:    int64(priority),
+			Status:      status,
+			Assignee:    assignee,
+			CreateDate:  createDate,
+			Comments:    comments,
+		})
+	}
+
+	return resp, nil
 }
 
 // RetrieveIssueByID returns an issue filtered by the issue id
@@ -235,8 +275,8 @@ func (mysqlSt *MysqlStorage) DeleteIssueByID(issueID int64) error {
 	return nil
 }
 
-func (mysqlSt *MysqlStorage) getComments(issueID int64) ([]string, error) {
-	comments := make([]string, 0)
+func (mysqlSt *MysqlStorage) getComments(issueID int64) ([]models.Comment, error) {
+	comments := make([]models.Comment, 0)
 	var comment string
 
 	query := `SELECT comment FROM comments WHERE issueID = ?`
@@ -249,7 +289,9 @@ func (mysqlSt *MysqlStorage) getComments(issueID int64) ([]string, error) {
 
 	for rows.Next() {
 		err = rows.Scan(&comment)
-		comments = append(comments, comment)
+		comments = append(comments, models.Comment{
+			Comment: comment,
+		})
 	}
 
 	return comments, nil

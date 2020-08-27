@@ -32,6 +32,10 @@ func (storage *Storage) UpdateIssue(_, _, _, _, _ string, _, _ int64) (*models.I
 	return &MockIssueResponse, nil
 }
 
+func (storage *Storage) RetrieveIssues() ([]models.IssueResponse, error) {
+	return []models.IssueResponse{MockIssueResponse}, nil
+}
+
 func (storage *Storage) RetrieveIssueByID(_ int64) (models.IssueResponse, error) {
 	return MockIssueResponse, nil
 }

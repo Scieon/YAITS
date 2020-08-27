@@ -13,14 +13,14 @@ services:
     ports:
       - "3306:3306"
     tty: true
-  app:
-    build:
-      context: ./../api
-    volumes:
-      - "./../api:/app"
-    container_name: app
-    ports:
-      - "8080:8080"
-    tty: true
-    depends_on:
-      - db
+#  app:
+#    build:
+#      context: ./../api
+#    volumes:
+#      - "./../api:/app"
+#    container_name: app
+#    ports:
+#      - "8080:8080"
+#    tty: true
+#    depends_on:
+#      - db

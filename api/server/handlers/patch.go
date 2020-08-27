@@ -15,7 +15,7 @@ import (
 //HandlePATCH - Route to update an issue
 // @summary Update an issue
 // @description Updates an issue given an issue id
-// @tags issue
+// @tags Update
 // @accept json
 // @produce json
 // @Param id path int true "ID of the issue"

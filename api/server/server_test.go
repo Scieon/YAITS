@@ -32,6 +32,18 @@ func TestNewServer(t *testing.T) {
 			verifyResponse(t, response, err, http.StatusNotFound)
 		})
 
+		t.Run("HandleGETAllIssues", func(t *testing.T) {
+			url := fmt.Sprintf("%s/issues", baseURL)
+			response, err := sendRequest(url, "GET", "")
+
+			body, _ := ioutil.ReadAll(response.Body)
+			var issueResponse []models.IssueResponse
+			_ = json.Unmarshal(body, &issueResponse)
+
+			assert.Equal(t, []models.IssueResponse{persistence.MockIssueResponse}, issueResponse, "issue response matches mock")
+			verifyResponse(t, response, err, http.StatusOK)
+		})
+
 		t.Run("HandleGETByID", func(t *testing.T) {
 			url := fmt.Sprintf("%s/issue/1", baseURL)
 			response, err := sendRequest(url, "GET", "")
@@ -81,10 +93,10 @@ func TestNewServer(t *testing.T) {
 			response, err := sendRequest(url, "POST", string(requestBodyJSON))
 
 			body, _ := ioutil.ReadAll(response.Body)
-			var issueID int64
-			_ = json.Unmarshal(body, &issueID)
+			var resp models.IssueIDResponse
+			_ = json.Unmarshal(body, &resp)
 
-			assert.Equal(t, issueID, int64(1), "a new issue id was returned")
+			assert.Equal(t, int64(1), resp.ID, "a new issue id was returned")
 			verifyResponse(t, response, err, http.StatusCreated)
 		})
 

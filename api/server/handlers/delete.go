@@ -15,7 +15,7 @@ import (
 //HandleDELETE - Route to delete an issue
 // @summary Delete an issue
 // @description Deletes an issue given an issue id
-// @tags issue
+// @tags Deletion
 // @accept json
 // @produce json
 // @Param id path int true "ID of the issue"

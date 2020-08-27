@@ -20,6 +20,40 @@ const (
 	Comment 	= "This is a comment"
 )
 
+func TestMysqlStorage_RetrieveIssues(t *testing.T) {
+	// setup
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	// force db closure at end of test
+	defer func() {
+		_ = db.Close()
+	}()
+
+	testingStorage := NewMysqlStorage(db)
+
+	mock.ExpectQuery("SELECT (.+) FROM issues").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "summary", "description", "priority", "status", "assignee", "createDate"}).
+			AddRow(IssueID, Summary, Description, Priority, Status, Assignee, CreateDate))
+
+	mock.ExpectQuery("SELECT (.+) FROM comments").
+		WithArgs(IssueID).
+		WillReturnRows(sqlmock.NewRows([]string{"comment"}).
+			AddRow(Comment))
+
+	// run the code
+	if _, err = testingStorage.RetrieveIssues(); err != nil {
+		t.Errorf("Error should not have occurred while getting all issues: %s", err)
+	}
+
+	//check expectations are met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Expectations not met: %s", err)
+	}
+}
+
 func TestMysqlStorage_RetrieveIssueByID(t *testing.T) {
 	// setup
 	db, mock, err := sqlmock.New()
@@ -46,7 +80,7 @@ func TestMysqlStorage_RetrieveIssueByID(t *testing.T) {
 
 	// run the code
 	if _, err = testingStorage.RetrieveIssueByID(IssueID); err != nil {
-		t.Errorf("Error should not have occurred while updating issue: %s", err)
+		t.Errorf("Error should not have occurred while retrieving issue: %s", err)
 	}
 
 	//check expectations are met
@@ -81,7 +115,7 @@ func TestMysqlStorage_RetrieveIssueByStatus(t *testing.T) {
 
 	// run the code
 	if _, err = testingStorage.RetrieveIssueByStatus(Status); err != nil {
-		t.Errorf("Error should not have occurred while updating issue: %s", err)
+		t.Errorf("Error should not have occurred while retrieving issue: %s", err)
 	}
 
 	//check expectations are met

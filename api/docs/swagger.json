@@ -23,7 +23,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "issue"
+                    "Creation"
                 ],
                 "summary": "Create an issue",
                 "parameters": [
@@ -43,7 +43,7 @@
                         "description": "Created",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.IssueResponse"
+                            "$ref": "#/definitions/models.IssueIDResponse"
                         }
                     },
                     "400": {
@@ -73,7 +73,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "issue"
+                    "Retrieval"
                 ],
                 "summary": "Retrieves an issue given issue id",
                 "parameters": [
@@ -125,7 +125,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "issue"
+                    "Deletion"
                 ],
                 "summary": "Delete an issue",
                 "parameters": [
@@ -176,7 +176,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "issue"
+                    "Update"
                 ],
                 "summary": "Update an issue",
                 "parameters": [
@@ -230,6 +230,51 @@
                 }
             }
         },
+        "/issues": {
+            "get": {
+                "description": "Retrieves all issues",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Retrieval"
+                ],
+                "summary": "Retrieves all existing issues",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.IssueResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorWrapper"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorWrapper"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorWrapper"
+                        }
+                    }
+                }
+            }
+        },
         "/issues/priority": {
             "get": {
                 "description": "Retrieves an issue given priority",
@@ -240,7 +285,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "issue"
+                    "Retrieval"
                 ],
                 "summary": "Retrieves an issue given priority",
                 "parameters": [
@@ -299,7 +344,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "issue"
+                    "Retrieval"
                 ],
                 "summary": "Retrieves an issue given status",
                 "parameters": [
@@ -344,6 +389,14 @@
         }
     },
     "definitions": {
+        "models.Comment": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ErrorWrapper": {
             "type": "object",
             "properties": {
@@ -355,11 +408,25 @@
                 }
             }
         },
+        "models.IssueIDResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.IssueResponse": {
             "type": "object",
             "properties": {
                 "assignee": {
                     "type": "string"
+                },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Comment"
+                    }
                 },
                 "createDate": {
                     "type": "string"
@@ -421,6 +488,9 @@
             "type": "object",
             "properties": {
                 "assignee": {
+                    "type": "string"
+                },
+                "comment": {
                     "type": "string"
                 },
                 "description": {

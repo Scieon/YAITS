@@ -13,11 +13,11 @@ import (
 //HandlePOST - Route to create an issue
 // @summary Create an issue
 // @description Create a new issue
-// @tags issue
+// @tags Creation
 // @accept json
 // @produce json
 // @param issueRequest body models.NewIssueRequest true "YAITS creation request"
-// @success 201 {object} models.IssueResponse
+// @success 201 {object} models.IssueIDResponse
 // @failure 400 {object} models.ErrorWrapper
 // @failure 500 {object} models.ErrorWrapper
 // @router /issue [post]
@@ -46,7 +46,7 @@ func HandlePOST(storage persistence.Storage) gin.HandlerFunc {
 		}
 
 		l.Debug("insertion successful")
-		c.JSON(http.StatusCreated, id)
+		c.JSON(http.StatusCreated, models.IssueIDResponse{ID: id})
 		return
 	}
 }

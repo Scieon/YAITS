@@ -30,6 +30,7 @@ func BuildRouter(logger *zap.SugaredLogger, storage persistence.Storage) *gin.En
 	apiGroup := router.Group("/api")
 
 	apiGroup.GET("/issue/:issueID", handlers.HandleGETByID(storage))
+	apiGroup.GET("/issues", handlers.HandleGETAllIssues(storage))
 	apiGroup.GET("/issues/status", handlers.HandleGETByStatus(storage))
 	apiGroup.GET("/issues/priority", handlers.HandleGETByPriority(storage))
 
